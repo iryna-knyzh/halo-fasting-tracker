@@ -17,13 +17,13 @@ logs: ## Перегляд логів всіх сервісів
 	docker-compose logs -f
 
 logs-frontend: ## Перегляд логів фронтенду
-	docker-compose logs -f mate-frontend
+	docker-compose logs -f frontend
 
 logs-backend: ## Перегляд логів бекенду
-	docker-compose logs -f mate-backend
+	docker-compose logs -f backend
 
 logs-db: ## Перегляд логів бази даних
-	docker-compose logs -f mate-db
+	docker-compose logs -f db
 
 clean: ## Очищення (volumes, images, containers)
 	docker-compose down -v
@@ -32,17 +32,17 @@ clean: ## Очищення (volumes, images, containers)
 
 clean-db: ## Очистити тільки базу даних (видалити volume)
 	docker-compose down
-	docker volume rm mate-setup_mate-db-data 2>/dev/null || true
-	docker-compose up -d mate-db
+	docker volume rm fullstack-template_db-data 2>/dev/null || true
+	docker-compose up -d db
 
 restart: ## Перезапуск сервісів
 	docker-compose restart
 
 db-migrate: ## Виконати міграції бази даних
-	docker-compose exec mate-backend npm run migration:run
+	docker-compose exec backend npm run migration:run
 
 db: ## Підключитися до бази даних
-	docker-compose exec mate-db psql -U mate_user -d mate_db
+	docker-compose exec db psql -U app_user -d app_db
 
 frontend-dev: ## Запуск фронтенду в dev режимі (локально)
 	cd frontend && npm run dev

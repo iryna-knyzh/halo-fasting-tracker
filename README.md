@@ -1,123 +1,103 @@
-# Mate Fullstack Docker Template
+# Halo — Fasting Tracker
 
-Повноцінний шаблон фулстек додатку для вивчення інфраструктури та Docker. Проект включає Next.js фронтенд, Nest.js бекенд та PostgreSQL базу даних, все піднімається через Docker Compose.
+Повноцінний fullstack застосунок для трекінгу голодування. Next.js 14 фронтенд, NestJS бекенд, PostgreSQL база даних — все запускається через Docker Compose.
 
-## 🚀 Особливості
+## Стек
 
-- **Frontend**: Next.js 14 з React Query та TypeScript
-- **Backend**: Nest.js з TypeORM, Swagger документацією та валідацією
-- **Database**: PostgreSQL 16 з автоматичною ініціалізацією
-- **Docker**: Повна контейнеризація з Docker Compose
-- **Developer Experience**: Hot reload, React Query DevTools, Swagger UI
+- **Frontend**: Next.js 14, TypeScript, CSS-in-JS
+- **Backend**: NestJS, TypeORM, JWT авторизація, Swagger
+- **Database**: PostgreSQL 16
+- **Infrastructure**: Docker Compose
 
-## 📋 Передумови
+## Швидкий старт
 
-- Docker та Docker Compose встановлені
-- Make (опціонально, для зручності)
+```bash
+# Клонувати репозиторій
+git clone <repository-url>
+cd fullstack-template
 
-## 🏗️ Архітектура
+# Налаштувати змінні оточення (опціонально)
+cp env.example .env
 
+# Запустити
+make up
+# або
+docker-compose up -d
 ```
-mate-setup/
-├── frontend/          # Next.js додаток з React Query
-├── backend/           # Nest.js API з TypeORM та PostgreSQL
-├── docker-compose.yml # Оркестрація всіх сервісів
-├── Makefile          # Зручні команди для управління
-└── README.md         # Документація
-```
 
-## ⚡ Швидкий старт
+Після запуску:
+- Застосунок: http://localhost:3000
+- Swagger API: http://localhost:4000/api/docs
 
-1. **Клонуйте репозиторій:**
-   ```bash
-   git clone <repository-url>
-   cd mate-setup
-   ```
-
-2. **Запустіть проект:**
-   ```bash
-   make up
-   ```
-   
-   Або без Make:
-   ```bash
-   docker-compose up -d --build
-   ```
-
-3. **Відкрийте в браузері:**
-   - Frontend: http://localhost:3000
-   - Swagger документація: http://localhost:4000/api/docs
-
-## 🛠️ Команди
-
-### Makefile команди
+## Команди
 
 | Команда | Опис |
 |---------|------|
-| `make up` | Підняти всі сервіси в фоновому режимі |
+| `make up` | Запустити всі сервіси |
 | `make down` | Зупинити всі сервіси |
-| `make build` | Зібрати Docker образи |
-| `make logs` | Перегляд логів всіх сервісів |
-| `make logs-frontend` | Логи тільки фронтенду |
-| `make logs-backend` | Логи тільки бекенду |
-| `make logs-db` | Логи тільки бази даних |
-| `make restart` | Перезапустити всі сервіси |
-| `make clean` | Повне очищення (volumes, images, containers) |
-| `make db` | Підключитися до PostgreSQL через psql |
-| `make install` | Встановити залежності локально |
+| `make logs` | Логи всіх сервісів |
+| `make logs-backend` | Логи бекенду |
+| `make logs-frontend` | Логи фронтенду |
+| `make logs-db` | Логи бази даних |
+| `make restart` | Перезапустити сервіси |
+| `make db` | Підключитися до PostgreSQL |
+| `make db-migrate` | Запустити міграції |
+| `make clean` | Повне очищення (volumes, containers) |
+| `make clean-db` | Очистити тільки базу даних |
 
-### Docker Compose команди
+## Структура
 
-```bash
-# Запуск
-docker-compose up -d              # Запустити в фоновому режимі
-docker-compose up -d --build      # Зібрати та запустити
-
-# Зупинка
-docker-compose down               # Зупинити та видалити контейнери
-docker-compose stop               # Тільки зупинити
-
-# Логи
-docker-compose logs -f            # Всі логи
-docker-compose logs -f mate-backend  # Логи конкретного сервісу
-
-# Перезапуск
-docker-compose restart            # Всі сервіси
-docker-compose restart mate-backend  # Конкретний сервіс
+```
+fullstack-template/
+├── frontend/          # Next.js застосунок
+│   └── src/
+│       ├── app/       # Next.js App Router
+│       ├── components/FastTracker/  # Основний UI
+│       └── lib/       # API client з JWT логікою
+├── backend/           # NestJS API
+│   └── src/
+│       ├── auth/      # JWT авторизація (register, login, refresh, logout)
+│       ├── fasting/   # Сесії голодування
+│       ├── user/      # Користувачі
+│       └── entities/  # TypeORM entities
+├── docker-compose.yml
+├── env.example        # Шаблон змінних оточення
+└── Makefile
 ```
 
-## 🔧 Конфігурація
+## API
 
-Файл `env.example` містить приклад конфігурації.
+### Авторизація
+| Метод | Ендпоінт | Опис |
+|-------|----------|------|
+| `POST` | `/api/auth/register` | Реєстрація → `{ user, accessToken, refreshToken }` |
+| `POST` | `/api/auth/login` | Вхід → `{ user, accessToken, refreshToken }` |
+| `POST` | `/api/auth/refresh` | Оновити access token |
+| `POST` | `/api/auth/logout` | Вихід (інвалідує refresh token) |
 
-## 📚 Документація
-- **Swagger API**: http://localhost:4000/api/docs - інтерактивна документація API
-- **React Query DevTools**: доступні на фронтенді (іконка внизу екрану)
+### Голодування (потребує Bearer токен)
+| Метод | Ендпоінт | Опис |
+|-------|----------|------|
+| `GET` | `/api/fasting` | Отримати свої сесії |
+| `POST` | `/api/fasting` | Зберегти сесію |
+| `DELETE` | `/api/fasting` | Очистити всі сесії |
+| `DELETE` | `/api/fasting/:id` | Видалити одну сесію |
 
-## 🧪 Тестування API
+## Конфігурація
 
-### Через Swagger UI
+Скопіюй `env.example` → `.env` і задай свої значення:
 
-1. Відкрийте http://localhost:4000/api/docs
-2. Оберіть потрібний ендпоінт
-3. Натисніть "Try it out"
-4. Введіть параметри та натисніть "Execute"
+```env
+DB_USER=app_user
+DB_PASSWORD=app_password
+DB_NAME=app_db
+JWT_ACCESS_SECRET=your-super-secret-access-key
+JWT_REFRESH_SECRET=your-super-secret-refresh-key
+```
 
-## 🤝 Внесок
+## Корисні посилання
 
-Вітаються pull requests! Для великих змін спочатку відкрийте issue для обговорення.
-
-
-## 📖 Корисні посилання
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Nest.js Documentation](https://docs.nestjs.com)
-- [React Query Documentation](https://tanstack.com/query/latest)
-- [TypeORM Documentation](https://typeorm.io)
-- [Docker Documentation](https://docs.docker.com)
-- [Docker Compose Documentation](https://docs.docker.com/compose/)
-- [Swagger Documentation](https://swagger.io/docs/)
-
-## ⭐ Зірки
-
-Якщо цей проект був корисним для вас, будь ласка, поставте зірку! ⭐
+- [Next.js](https://nextjs.org/docs)
+- [NestJS](https://docs.nestjs.com)
+- [TypeORM](https://typeorm.io)
+- [Docker Compose](https://docs.docker.com/compose/)

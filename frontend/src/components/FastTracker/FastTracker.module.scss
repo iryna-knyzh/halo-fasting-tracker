@@ -1,0 +1,15 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.page {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(180deg, #fdfbff 0%, #f4f0fb 100%);
+  display: flex;
+  justify-content: center;
+  font-family: $font;
+
+  @include on-tablet {
+    padding: 28px 18px 48px;
+  }
+}

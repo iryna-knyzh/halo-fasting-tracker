@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
-import { ReactQueryProvider } from '@/lib/react-query'
 import './globals.css'
 import styles from './layout.module.scss'
 
 export const metadata: Metadata = {
-  title: 'Mate Fullstack Template',
-  description: 'Fullstack application template with Next.js, Nest.js and PostgreSQL',
+  title: 'Halo · Fasting Tracker',
+  description: 'Your calm fasting tracker',
 }
 
 export default function RootLayout({
@@ -16,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="uk">
       <body className={styles.body}>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        {children}
       </body>
     </html>
   )

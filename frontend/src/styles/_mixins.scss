@@ -1,0 +1,36 @@
+@use 'variables' as *;
+
+// Mobile-first: base styles are mobile, overrides inside on-tablet / on-desktop.
+// Never write raw @media in component modules — use these mixins.
+
+@mixin on-tablet {
+  @media (min-width: $tablet-min-width) {
+    @content;
+  }
+}
+
+@mixin on-desktop {
+  @media (min-width: $desktop-min-width) {
+    @content;
+  }
+}
+
+// Full width on mobile, centered with max-width 1200px on desktop
+@mixin container {
+  width: 100%;
+  margin: 0 auto;
+
+  @include on-desktop {
+    max-width: $desktop-min-width;
+  }
+}
+
+// Card frame: flat fullscreen on mobile, rounded card with shadow on tablet+
+@mixin card-frame {
+  background: $surface;
+
+  @include on-tablet {
+    border-radius: 32px;
+    box-shadow: $shadow-card;
+  }
+}

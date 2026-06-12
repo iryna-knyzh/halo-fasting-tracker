@@ -1,0 +1,612 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.card {
+  @include container;
+  @include card-frame;
+
+  padding: 26px 24px 30px;
+  animation: sft-fadein 0.4s ease;
+
+  @include on-tablet {
+    max-width: 560px;
+    padding: 30px 36px 36px;
+  }
+
+  @include on-desktop {
+    max-width: $desktop-min-width;
+    padding: 36px 48px 44px;
+  }
+}
+
+// single column on mobile/tablet, two columns on desktop
+.columns {
+  @include on-desktop {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 64px;
+    align-items: start;
+  }
+}
+
+.mainCol {
+  min-width: 0;
+}
+
+.sideCol {
+  min-width: 0;
+}
+
+// header
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: $grad-logo;
+  box-shadow: inset 0 0 0 7px $surface;
+}
+
+.appName {
+  font-size: 18px;
+  font-weight: 700;
+  color: $ink;
+  letter-spacing: -0.2px;
+  line-height: 1;
+}
+
+.appTagline {
+  font-size: 11px;
+  font-weight: 500;
+  color: $faint;
+  letter-spacing: 0.4px;
+  margin-top: 2px;
+}
+
+// user avatar + menu
+
+.userMenu {
+  position: relative;
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 5px 4px 11px;
+  border-radius: 999px;
+  background: #f6f3fc;
+}
+
+.userName {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: $text;
+  max-width: 78px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: $grad-avatar;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $surface;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 220px;
+  background: $surface;
+  border-radius: 18px;
+  box-shadow: 0 18px 44px -14px rgba(120, 100, 200, 0.5), 0 0 0 1px rgba(120, 100, 200, 0.06);
+  padding: 8px;
+  z-index: 20;
+  animation: sft-fadein 0.18s ease;
+}
+
+.menuUser {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px 12px;
+}
+
+.menuAvatar {
+  @extend .avatar;
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.menuUserInfo {
+  min-width: 0;
+}
+
+.menuUserName {
+  font-size: 14px;
+  font-weight: 700;
+  color: $ink;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menuUserEmail {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: $faint;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menuStats {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 6px;
+  margin: 0 4px 6px;
+  background: $surface-row;
+  border-radius: 12px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.statValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: $text;
+}
+
+.statLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: $ghost;
+  margin-top: 1px;
+}
+
+.signOut {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #b07a9e;
+}
+
+.signOutIcon {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  border: 2px solid #d7a9c6;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+// status pill
+
+.statusRow {
+  display: flex;
+  justify-content: center;
+  margin: 22px 0 6px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.pillIdle {
+  background: $surface-soft;
+  color: $muted;
+}
+
+.pillFasting {
+  background: #fbeefb;
+  color: #a55a9c;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.dotIdle {
+  background: #c2b6e6;
+}
+
+.dotFasting {
+  background: #d98ad0;
+  animation: sft-pulse 1.6s ease-in-out infinite;
+}
+
+// ring
+
+.ringWrap {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 8px auto 4px;
+}
+
+.ringSvg {
+  display: block;
+  animation: sft-breathe 5s ease-in-out infinite;
+}
+
+.ringProgress {
+  transition: stroke-dashoffset 0.7s ease;
+}
+
+.ringCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.startButton {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 188px;
+  height: 188px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #faf7ff, #f1ecfb);
+  box-shadow: 0 10px 26px -14px rgba(150, 130, 220, 0.6);
+}
+
+.startLabel {
+  font-size: 36px;
+  font-weight: 600;
+  color: $ink-soft;
+  letter-spacing: -0.5px;
+}
+
+.startHint {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: $faint;
+  margin-top: 4px;
+}
+
+.elapsedLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: $ghost;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+.elapsedTime {
+  font-size: 47px;
+  font-weight: 600;
+  color: $ink;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.goalStatus {
+  font-size: 13px;
+  font-weight: 600;
+  color: $faint;
+  margin-top: 6px;
+}
+
+.goalStatusReached {
+  color: $success;
+}
+
+// controls
+
+.controls {
+  margin-top: 14px;
+}
+
+.goalPicker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.controlHint {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: $faint;
+}
+
+.goalChips {
+  display: flex;
+  gap: 8px;
+}
+
+.chip {
+  cursor: pointer;
+  padding: 9px 17px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  background: $surface-soft;
+  color: #7a6fa6;
+}
+
+.chipActive {
+  background: $grad-button;
+  color: $surface;
+  box-shadow: 0 8px 18px -8px rgba(150, 130, 220, 0.7);
+}
+
+.fastingControls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+}
+
+.startedAt {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: $faint;
+  white-space: nowrap;
+}
+
+.endButton {
+  cursor: pointer;
+  padding: 15px 44px;
+  border-radius: 999px;
+  background: $grad-button;
+  color: $surface;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: $shadow-button;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, $divider, transparent);
+  margin: 26px 0 22px;
+
+  @include on-desktop {
+    display: none;
+  }
+}
+
+// chart
+
+.chart {
+  margin-bottom: 26px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: $ink;
+}
+
+.sectionNote {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: $faint;
+}
+
+.chartArea {
+  position: relative;
+  height: 158px;
+}
+
+.goalLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1.5px dashed #cdbef0;
+}
+
+.goalLineLabel {
+  position: absolute;
+  left: 0;
+  top: -8px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: $ghost;
+  background: $surface;
+  padding: 0 5px;
+  letter-spacing: 0.3px;
+}
+
+.bars {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 7px;
+  height: 100%;
+}
+
+.barCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.barValue {
+  font-size: 10px;
+  font-weight: 600;
+  color: $ghost;
+  margin-bottom: 5px;
+}
+
+.bar {
+  width: 100%;
+  max-width: 26px;
+  border-radius: 8px 8px 4px 4px;
+  background: #e4ddf4;
+}
+
+.barReached {
+  background: linear-gradient(180deg, #c8b6ff, #b8c0ff);
+}
+
+.barDays {
+  display: flex;
+  justify-content: space-between;
+  gap: 7px;
+  margin-top: 7px;
+}
+
+.barDay {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: $faint;
+}
+
+// history
+
+.historyHeader {
+  @extend .sectionHeader;
+  margin-bottom: 12px;
+}
+
+.clearButton {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #bbb2d4;
+}
+
+.empty {
+  text-align: center;
+  padding: 30px 12px;
+  color: $ghost;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 15px;
+  background: $surface-row;
+  border-radius: 16px;
+}
+
+.historyChip {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.historyDot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.historyInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.historyDuration {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: $ink;
+}
+
+.historyRange {
+  font-size: 12px;
+  font-weight: 500;
+  color: $faint;
+  margin-top: 2px;
+}
+
+.historyMeta {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.historyDate {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: $muted;
+  white-space: nowrap;
+}
+
+.historyTag {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.tagMet {
+  color: $success;
+}
+
+.tagShort {
+  color: $warning;
+}

@@ -1,5 +1,5 @@
-import { HomePage } from '@/components/Home/HomePage'
+import { FastTracker } from '@/components/FastTracker';
 
 export default function Home() {
-  return <HomePage />
+  return <FastTracker />;
 }

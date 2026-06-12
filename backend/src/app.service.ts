@@ -7,7 +7,7 @@ export class AppService {
   getTestData() {
     this.logger.log('Test endpoint called');
     return {
-      message: 'Привіт з Mate Backend!',
+      message: 'Backend is running!',
       timestamp: new Date().toISOString(),
       status: 'success',
       version: process.env.npm_package_version || '1.0.0',

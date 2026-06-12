@@ -1,0 +1,37 @@
+// Halo design tokens
+
+$font: 'Quicksand', system-ui, sans-serif;
+
+// breakpoints (mobile-first)
+$tablet-min-width: 640px;
+$desktop-min-width: 1200px;
+
+// text
+$ink: #4a3f72;
+$ink-soft: #5a4f86;
+$text: #6a5f96;
+$muted: #8a80b3;
+$faint: #a79fc4;
+$ghost: #b6aed2;
+
+// accents
+$lavender: #c8b6ff;
+$accent: #9a8ad8;
+$success: #6fae8a;
+$warning: #c2a86a;
+$danger: #c98a8a;
+
+// surfaces
+$surface: #ffffff;
+$surface-soft: #f4f1fb;
+$surface-row: #faf8fe;
+$divider: #efeaf7;
+
+// gradients
+$grad-button: linear-gradient(135deg, #b39ae6, #9a8ad8);
+$grad-avatar: linear-gradient(135deg, #c8b6ff, #b8c0ff);
+$grad-logo: conic-gradient(from 140deg, #ffd6ff, #e7c6ff, #c8b6ff, #b8c0ff, #bbd0ff, #ffd6ff);
+
+// shadows
+$shadow-card: 0 24px 60px -28px rgba(120, 100, 200, 0.45), 0 2px 8px rgba(120, 100, 200, 0.06);
+$shadow-button: 0 12px 24px -10px rgba(150, 130, 220, 0.75);

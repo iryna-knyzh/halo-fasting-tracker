@@ -1,53 +1,55 @@
 services:
-  mate-db:
+  db:
     image: postgres:16-alpine
-    container_name: mate-db
+    container_name: db
     environment:
-      POSTGRES_USER: ${DB_USER:-mate_user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-mate_password}
-      POSTGRES_DB: ${DB_NAME:-mate_db}
+      POSTGRES_USER: ${DB_USER:-app_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-app_password}
+      POSTGRES_DB: ${DB_NAME:-app_db}
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
-      - mate-db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     networks:
-      - mate-network
+      - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-mate_user} -d ${DB_NAME:-mate_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-app_user} -d ${DB_NAME:-app_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  mate-backend:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: mate-backend
+    container_name: backend
     ports:
       - "${BACKEND_PORT:-4000}:4000"
     environment:
       NODE_ENV: ${NODE_ENV:-development}
-      DB_HOST: mate-db
+      DB_HOST: db
       DB_PORT: 5432
-      DB_USER: ${DB_USER:-mate_user}
-      DB_PASSWORD: ${DB_PASSWORD:-mate_password}
-      DB_NAME: ${DB_NAME:-mate_db}
+      DB_USER: ${DB_USER:-app_user}
+      DB_PASSWORD: ${DB_PASSWORD:-app_password}
+      DB_NAME: ${DB_NAME:-app_db}
       PORT: 4000
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-dev-access-secret-change-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret-change-in-production}
     volumes:
       - ./backend:/app
       - /app/node_modules
     depends_on:
-      mate-db:
+      db:
         condition: service_healthy
     networks:
-      - mate-network
+      - app-network
     command: npm run start:dev
 
-  mate-frontend:
+  frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: mate-frontend
+    container_name: frontend
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
@@ -58,14 +60,14 @@ services:
       - /app/node_modules
       - /app/.next
     depends_on:
-      - mate-backend
+      - backend
     networks:
-      - mate-network
+      - app-network
     command: npm run dev
 
 networks:
-  mate-network:
+  app-network:
     driver: bridge
 
 volumes:
-  mate-db-data:
+  db-data:
