@@ -1,91 +1,41 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Param,
   Delete,
-  ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiParam,
-  ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { User } from '../entities/user.entity';
 
 @ApiTags('Користувачі')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('api/users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Отримати всіх користувачів' })
-  @ApiResponse({
-    status: 200,
-    description: 'Список користувачів успішно отримано',
-    type: [User],
-  })
-  async getAllUsers(): Promise<User[]> {
-    return this.userService.findAll();
+  @Get('me')
+  @ApiOperation({ summary: 'Отримати поточного користувача' })
+  @ApiResponse({ status: 200, description: 'Профіль користувача', type: User })
+  async getMe(@CurrentUser() user: User): Promise<User> {
+    return this.userService.findOne(user.id);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Отримати користувача за ID' })
-  @ApiParam({ name: 'id', type: Number, description: 'ID користувача' })
-  @ApiResponse({
-    status: 200,
-    description: 'Користувач успішно знайдено',
-    type: User,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Користувача не знайдено',
-  })
-  async getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    return this.userService.findOne(id);
-  }
-
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Створити нового користувача' })
-  @ApiBody({ type: CreateUserDto })
-  @ApiResponse({
-    status: 201,
-    description: 'Користувач успішно створено',
-    type: User,
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Користувач з таким email вже існує',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Невірні дані для створення користувача',
-  })
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
-  }
-
-  @Delete(':id')
+  @Delete('me')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Видалити користувача' })
-  @ApiParam({ name: 'id', type: Number, description: 'ID користувача' })
-  @ApiResponse({
-    status: 204,
-    description: 'Користувач успішно видалено',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Користувача не знайдено',
-  })
-  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    await this.userService.remove(id);
+  @ApiOperation({ summary: 'Видалити власний акаунт' })
+  @ApiResponse({ status: 204, description: 'Акаунт успішно видалено' })
+  async deleteMe(@CurrentUser() user: User): Promise<void> {
+    await this.userService.remove(user.id);
   }
 }
