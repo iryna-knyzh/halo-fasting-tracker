@@ -16,7 +16,10 @@
       "Bash(docker build *)",
       "Bash(curl -s -o /dev/null -w \"frontend prod image -> HTTP %{http_code}\\\\n\" http://localhost:3009/)",
       "Bash(docker rm *)",
-      "Bash(docker rmi *)"
+      "Bash(docker rmi *)",
+      "Bash(git mv *)",
+      "Bash(docker-compose config *)",
+      "Bash(git commit -q -m 'Make production Dockerfile the default for Railway auto-detection *)"
     ]
   }
 }
