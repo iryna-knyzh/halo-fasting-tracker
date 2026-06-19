@@ -18,7 +18,12 @@ import { FastingSession } from './entities/fasting-session.entity';
       password: process.env.DB_PASSWORD || 'app_password',
       database: process.env.DB_NAME || 'app_db',
       entities: [User, FastingSession],
-      synchronize: process.env.NODE_ENV !== 'production',
+      // In production synchronize is off by default; set DB_SYNCHRONIZE=true to
+      // let TypeORM create the schema on first deploy (no migrations yet).
+      synchronize:
+        process.env.DB_SYNCHRONIZE !== undefined
+          ? process.env.DB_SYNCHRONIZE === 'true'
+          : process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV === 'development',
     }),
     UserModule,

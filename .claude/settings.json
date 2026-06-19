@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker-compose up *)",
+      "Bash(docker-compose rm *)",
+      "Bash(curl -s -o /dev/null -w \"frontend :3001 -> HTTP %{http_code}\\\\n\" http://localhost:3001/)",
+      "Bash(curl -s -o /dev/null -w \"backend  :4000 -> HTTP %{http_code}\\\\n\" http://localhost:4000/api/docs)",
+      "Bash(docker run *)",
+      "Bash(sudo -n true)",
+      "Bash(docker info *)",
+      "Bash(curl -s -o /dev/null -w \"Swagger :4000/api/docs -> %{http_code}\\\\n\" http://localhost:4000/api/docs)",
+      "Bash(curl -s -X POST http://localhost:4000/api/auth/register -H 'Content-Type: application/json' -d '{\"name\":\"Smoke Test\",\"email\":\"smoke@test.dev\",\"password\":\"test123\"}' -w \"\\\\nHTTP %{http_code}\\\\n\")",
+      "Bash(curl -s -o /dev/null -D - -X OPTIONS http://localhost:4000/api/auth/register -H 'Origin: http://localhost:3001' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type')",
+      "Bash(ls -d public)",
+      "Bash(ls public *)",
+      "Bash(docker build *)",
+      "Bash(curl -s -o /dev/null -w \"frontend prod image -> HTTP %{http_code}\\\\n\" http://localhost:3009/)",
+      "Bash(docker rm *)",
+      "Bash(docker rmi *)"
+    ]
+  }
+}
