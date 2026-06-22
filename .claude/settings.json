@@ -58,7 +58,21 @@
       "Bash(npx --yes expo install react-native-gesture-handler)",
       "Bash(node -e \"console.log\\('gesture-handler:', require\\('./package.json'\\).dependencies['react-native-gesture-handler']\\)\")",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('eas.json'\\)\\); console.log\\('eas.json валідний ✅'\\)\")",
-      "Bash(node -e \"const a=require\\('./app.json'\\).expo; console.log\\(a.name, '/', a.slug, '/', a.android.package\\)\")"
+      "Bash(node -e \"const a=require\\('./app.json'\\).expo; console.log\\(a.name, '/', a.slug, '/', a.android.package\\)\")",
+      "Bash(git commit -q -m 'Add mobile_no_backend \\(local-only Halo\\) + finalize mobile icon *)",
+      "Bash(magick -list font)",
+      "Bash(fc-list)",
+      "Bash(magick -size 512x512 gradient:'#e7c6ff'-'#bbd0ff' /tmp/g512.png)",
+      "Bash(magick /tmp/g512.png \\\\\\( -size 512x512 xc:none -fill white -draw \"circle 256,256 256,96\" \\\\\\) -compose DstIn -composite /tmp/disc512.png)",
+      "Bash(magick -size 512x512 xc:white /tmp/disc512.png -compose over -composite -fill white -draw \"circle 256,256 256,181\" icon-512.png)",
+      "Bash(identify -format \"%f %wx%h\\\\n\" icon-512.png)",
+      "Bash(magick -size 512x512 xc:white /tmp/disc512.png -compose over -composite -fill white -draw 'circle 256,256 256,181' -background white -alpha remove -alpha off icon-512.png)",
+      "Bash(identify -format \"%f %wx%h alpha=%A\\\\n\" icon-512.png)",
+      "Bash(magick -size 512x512 'gradient:#e7c6ff-#bbd0ff' -alpha set '\\(' -size 512x512 xc:none -fill white -draw 'circle 256,256 256,96' '\\)' -compose DstIn -composite /tmp/disc512.png)",
+      "Bash(identify -format \"disc alpha=%A\\\\n\" /tmp/disc512.png)",
+      "Bash(magick /tmp/disc512.png -format \"corner=%[pixel:p{2,2}]\\\\n\" info:)",
+      "Bash(magick -size 512x512 xc:white /tmp/disc512.png -compose over -composite -fill white -draw 'circle 256,256 256,181' -alpha off icon-512.png)",
+      "Bash(magick icon-512.png -format \"corner=%[pixel:p{2,2}] center=%[pixel:p{256,256}]\\\\n\" info:)"
     ],
     "additionalDirectories": [
       "/tmp/halo-export",
