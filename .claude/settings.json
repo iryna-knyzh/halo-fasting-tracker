@@ -44,10 +44,25 @@
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('app.json'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('eas.json'\\)\\); console.log\\('app.json + eas.json: валідний JSON ✅'\\)\")",
       "Bash(npx --yes eas-cli@latest --version)",
       "Bash(rm -f assets/android-icon-background.png assets/android-icon-monochrome.png)",
-      "Bash(npx --yes expo install expo-linear-gradient)"
+      "Bash(npx --yes expo install expo-linear-gradient)",
+      "Bash(git commit -q -m 'Polish Halo mobile app: branding, account menu, layout fixes *)",
+      "Bash(magick -size 1024x1024 gradient:'#e7c6ff'-'#bbd0ff' /tmp/grad.png)",
+      "Bash(magick -size 1024x1024 xc:black -fill white -draw \"circle 512,512 512,150\" -fill black -draw \"circle 512,512 512,320\" /tmp/mask_icon.png)",
+      "Bash(magick /tmp/grad.png /tmp/mask_icon.png -compose CopyOpacity -composite /tmp/ring_icon.png)",
+      "Bash(magick -size 1024x1024 xc:white /tmp/ring_icon.png -composite icon.png)",
+      "Bash(magick icon.png -resize 48x48 favicon.png)",
+      "Bash(npx --yes expo install @react-navigation/native @react-navigation/native-stack react-native-screens react-native-safe-area-context @react-native-async-storage/async-storage expo-linear-gradient)",
+      "Bash(node -e \"const p=require\\('./package.json'\\).dependencies; ['@react-navigation/native','@react-navigation/native-stack','react-native-screens','react-native-safe-area-context','@react-native-async-storage/async-storage','expo-linear-gradient'].forEach\\(k=>console.log\\(k, p[k]||'MISSING'\\)\\)\")",
+      "Bash(cd /home/dev/projects/fullstack-template/mobile_no_backend *)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('app.json'\\)\\); console.log\\('app.json валідний ✅'\\)\")",
+      "Bash(npx --yes expo install react-native-gesture-handler)",
+      "Bash(node -e \"console.log\\('gesture-handler:', require\\('./package.json'\\).dependencies['react-native-gesture-handler']\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('eas.json'\\)\\); console.log\\('eas.json валідний ✅'\\)\")",
+      "Bash(node -e \"const a=require\\('./app.json'\\).expo; console.log\\(a.name, '/', a.slug, '/', a.android.package\\)\")"
     ],
     "additionalDirectories": [
-      "/tmp/halo-export"
+      "/tmp/halo-export",
+      "/tmp"
     ]
   }
 }

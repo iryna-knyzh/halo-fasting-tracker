@@ -5,9 +5,9 @@ interface Props {
   size?: number;
 }
 
-// The Halo mark: a gradient ring with a white center (mirrors the web logo).
+// The Halo mark: a gradient ring with a white center.
 export function HaloLogo({ size = 56 }: Props) {
-  const ring = Math.round(size * 0.22); // ring thickness
+  const ring = Math.round(size * 0.22);
   return (
     <LinearGradient
       colors={['#ffd6ff', '#c8b6ff', '#bbd0ff']}

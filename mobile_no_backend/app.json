@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Halo",
-    "slug": "halo",
+    "slug": "halo-local",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,17 +15,14 @@
         "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.irynaknyzh.halo"
+      "package": "com.irynaknyzh.halolocal"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-secure-store"
-    ],
     "extra": {
       "eas": {
-        "projectId": "4cb1185a-7005-4150-8a88-f044848d3875"
+        "projectId": "1a994f46-4a04-4180-ac13-59a1511015aa"
       }
     }
   }
