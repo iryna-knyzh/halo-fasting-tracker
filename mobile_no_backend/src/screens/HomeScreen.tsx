@@ -138,9 +138,13 @@ export function HomeScreen() {
 
         {/* recent fasts chart (like the web) */}
         {count > 0 && (
-          <View style={styles.chartWrap}>
+          <>
+            <View style={styles.historyHeader}>
+              <Text style={styles.sectionTitle}>Recent fasts</Text>
+              <Text style={styles.chartNote}>hours per session</Text>
+            </View>
             <RecentChart history={history} goalHours={goalHours} />
-          </View>
+          </>
         )}
 
         {/* history */}
@@ -239,9 +243,9 @@ const styles = StyleSheet.create({
   endBtn: { paddingHorizontal: 44, paddingVertical: 15, borderRadius: 999, backgroundColor: colors.accent },
   endBtnText: { color: colors.surface, fontWeight: '700', fontSize: 16 },
 
-  chartWrap: { marginTop: 28 },
   historyHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 28, marginBottom: 12 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.ink },
+  chartNote: { fontSize: 11.5, fontWeight: '500', color: colors.faint },
   clear: { fontSize: 13, fontWeight: '600', color: colors.ghost },
   empty: { textAlign: 'center', color: colors.ghost, fontSize: 13, lineHeight: 20, paddingVertical: 24 },
 

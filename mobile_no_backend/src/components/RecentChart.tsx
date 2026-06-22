@@ -20,10 +20,6 @@ export function RecentChart({ history, goalHours }: Props) {
 
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Recent fasts</Text>
-        <Text style={styles.note}>hours per session</Text>
-      </View>
       <View style={styles.chart}>
         <View style={[styles.goalLine, { bottom: goalLine + 18 }]} />
         {recent.map((s, i) => {
@@ -44,9 +40,6 @@ export function RecentChart({ history, goalHours }: Props) {
 
 const styles = StyleSheet.create({
   card: { backgroundColor: colors.surface, borderRadius: 18, padding: 16 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 },
-  title: { fontSize: 15, fontWeight: '700', color: colors.ink },
-  note: { fontSize: 11.5, fontWeight: '500', color: colors.faint },
   chart: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 170, position: 'relative' },
   goalLine: { position: 'absolute', left: 0, right: 0, borderTopWidth: 1.5, borderColor: '#cdbef0', borderStyle: 'dashed' },
   barCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end' },
