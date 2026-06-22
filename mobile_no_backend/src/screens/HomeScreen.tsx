@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet, Modal, Alert, Platform, Animated } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Modal, Alert, Platform, Animated, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useHalo } from '../store';
 import { fmt, timeStr, getInitials } from '../utils';
@@ -12,9 +12,11 @@ import { colors } from '../theme';
 const GOAL_HOURS = [13, 16, 18, 20];
 
 export function HomeScreen() {
-  const { name, goalHours, fast, history, setGoal, startFast, endFast, clearHistory } = useHalo();
+  const { name, goalHours, fast, history, setName, setGoal, startFast, endFast, clearHistory } = useHalo();
   const [now, setNow] = useState(Date.now());
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
   const greetingOpacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -43,6 +45,21 @@ export function HomeScreen() {
   const count = history.length;
   const avg = count ? history.reduce((a, s) => a + s.duration, 0) / count / 3.6e6 : 0;
   const goalMet = history.filter((s) => s.duration >= goalMs).length;
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setEditingName(false);
+  };
+
+  const startEditName = () => {
+    setNameDraft(name ?? '');
+    setEditingName(true);
+  };
+
+  const saveName = () => {
+    if (nameDraft.trim()) setName(nameDraft);
+    setEditingName(false);
+  };
 
   const confirmClear = () => {
     // Alert.alert is a no-op on react-native-web, so use the browser confirm there.
@@ -165,16 +182,36 @@ export function HomeScreen() {
       </ScrollView>
 
       {/* account menu */}
-      <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
+      <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={closeMenu}>
+        <Pressable style={styles.backdrop} onPress={closeMenu}>
           <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
             <View style={styles.menuHeader}>
               <View style={styles.menuAvatar}>
                 <Text style={styles.menuAvatarText}>{getInitials(name ?? '')}</Text>
               </View>
               <View style={styles.flex}>
-                <Text style={styles.menuName} numberOfLines={1}>{name}</Text>
-                <Text style={styles.menuSub}>{count} fasts logged</Text>
+                {editingName ? (
+                  <View style={styles.nameEditRow}>
+                    <TextInput
+                      style={styles.nameInput}
+                      value={nameDraft}
+                      onChangeText={setNameDraft}
+                      placeholder="Your name"
+                      placeholderTextColor={colors.ghost}
+                      autoFocus
+                      returnKeyType="done"
+                      onSubmitEditing={saveName}
+                    />
+                    <Pressable onPress={saveName} hitSlop={8}>
+                      <Text style={styles.nameSave}>Save</Text>
+                    </Pressable>
+                  </View>
+                ) : (
+                  <Pressable onPress={startEditName}>
+                    <Text style={styles.menuName} numberOfLines={1}>{name}  ✎</Text>
+                    <Text style={styles.menuSub}>tap to edit name</Text>
+                  </Pressable>
+                )}
               </View>
             </View>
 
@@ -256,6 +293,9 @@ const styles = StyleSheet.create({
   menuAvatarText: { color: colors.surface, fontWeight: '700', fontSize: 15 },
   menuName: { fontSize: 14, fontWeight: '700', color: colors.ink },
   menuSub: { fontSize: 12, color: colors.faint, marginTop: 1 },
+  nameEditRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  nameInput: { flex: 1, borderBottomWidth: 1.5, borderColor: colors.lavender, paddingVertical: 2, fontSize: 14, fontWeight: '700', color: colors.ink },
+  nameSave: { fontSize: 13, fontWeight: '700', color: colors.accent },
   menuStats: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.surfaceRow, borderRadius: 12, paddingVertical: 10, marginHorizontal: 4, marginBottom: 6 },
   menuStat: { alignItems: 'center' },
   menuStatValue: { fontSize: 16, fontWeight: '700', color: colors.text },
