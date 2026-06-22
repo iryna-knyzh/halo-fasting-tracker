@@ -156,7 +156,7 @@ export function HomeScreen({ navigation }: Props) {
         {count === 0 ? (
           <Text style={styles.empty}>No fasts logged yet.{'\n'}Tap Start to begin your first one.</Text>
         ) : (
-          history.map((s) => <HistoryRow key={s.start} session={s} goalMs={goalMs} />)
+          history.map((s, i) => <HistoryRow key={s.start} session={s} goalMs={goalMs} index={i} />)
         )}
 
       </ScrollView>

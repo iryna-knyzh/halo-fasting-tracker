@@ -3,18 +3,25 @@ import { FastSession } from '../types';
 import { dur, timeStr, dateStr } from '../utils';
 import { colors } from '../theme';
 
+// Cycling palette, like the web app — each row gets its own colour.
+const PALETTE = ['#ffd6ff', '#e7c6ff', '#c8b6ff', '#b8c0ff', '#bbd0ff'];
+const CHIPS_BG = ['#fbeefb', '#f3ecfb', '#efebfc', '#ecedfc', '#ecf1fc'];
+
 interface Props {
   session: FastSession;
   goalMs: number;
+  index: number;
 }
 
-export function HistoryRow({ session, goalMs }: Props) {
+export function HistoryRow({ session, goalMs, index }: Props) {
   const met = session.duration >= goalMs;
+  const dotColor = PALETTE[index % PALETTE.length];
+  const chipBg = CHIPS_BG[index % CHIPS_BG.length];
 
   return (
     <View style={styles.row}>
-      <View style={styles.rowDotWrap}>
-        <View style={[styles.rowDot, { backgroundColor: met ? colors.lavender : colors.ghost }]} />
+      <View style={[styles.rowDotWrap, { backgroundColor: chipBg }]}>
+        <View style={[styles.rowDot, { backgroundColor: dotColor }]} />
       </View>
       <View style={styles.flex}>
         <Text style={styles.rowDuration}>{dur(session.duration)}</Text>
@@ -22,7 +29,7 @@ export function HistoryRow({ session, goalMs }: Props) {
       </View>
       <View style={styles.rowMeta}>
         <Text style={styles.rowDate}>{dateStr(session.end)}</Text>
-        <Text style={[styles.rowTag, { color: met ? colors.success : colors.muted }]}>
+        <Text style={[styles.rowTag, { color: met ? colors.success : '#c2a86a' }]}>
           {met ? 'goal met' : 'short'}
         </Text>
       </View>
