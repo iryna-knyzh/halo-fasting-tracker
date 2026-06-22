@@ -1,17 +1,15 @@
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Swipeable } from 'react-native-gesture-handler';
-import { LinearGradient } from 'expo-linear-gradient';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useHalo } from '../store';
-import { FastSession, RootStackParamList } from '../types';
-import { dur, timeStr, dateStr, wd } from '../utils';
+import { RootStackParamList } from '../types';
+import { wd } from '../utils';
 import { colors } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Stats'>;
 
 export function StatsScreen({ navigation }: Props) {
-  const { goalHours, history, deleteSession } = useHalo();
+  const { goalHours, history } = useHalo();
   const goalMs = goalHours * 3.6e6;
 
   const count = history.length;
@@ -68,18 +66,7 @@ export function StatsScreen({ navigation }: Props) {
           </View>
         )}
 
-        {/* full history */}
-        <Text style={styles.sectionTitle}>History</Text>
-        {count === 0 ? (
-          <Text style={styles.empty}>No fasts logged yet.</Text>
-        ) : (
-          <>
-            <Text style={styles.hint}>Swipe a record right to delete it.</Text>
-            {history.map((s) => (
-              <HistoryRow key={s.start} session={s} goalMs={goalMs} onDelete={() => deleteSession(s.start)} />
-            ))}
-          </>
-        )}
+        {count === 0 && <Text style={styles.empty}>No fasts logged yet.</Text>}
       </ScrollView>
     </SafeAreaView>
   );
@@ -94,55 +81,8 @@ function Tile({ value, label }: { value: string; label: string }) {
   );
 }
 
-function HistoryRow({
-  session,
-  goalMs,
-  onDelete,
-}: {
-  session: FastSession;
-  goalMs: number;
-  onDelete: () => void;
-}) {
-  const met = session.duration >= goalMs;
-
-  const renderLeftActions = () => (
-    <Pressable onPress={onDelete} style={styles.deleteAction}>
-      <LinearGradient
-        colors={['#f4b0b0', '#d96a6a', '#c14d4d']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.deleteGradient}
-      >
-        <Text style={styles.deleteIcon}>🗑</Text>
-        <Text style={styles.deleteText}>Delete</Text>
-      </LinearGradient>
-    </Pressable>
-  );
-
-  return (
-    <Swipeable renderLeftActions={renderLeftActions} overshootLeft={false} friction={1.6}>
-      <View style={styles.row}>
-        <View style={styles.rowDotWrap}>
-          <View style={[styles.rowDot, { backgroundColor: met ? colors.lavender : colors.ghost }]} />
-        </View>
-        <View style={styles.flex}>
-          <Text style={styles.rowDuration}>{dur(session.duration)}</Text>
-          <Text style={styles.rowRange}>{timeStr(session.start)} → {timeStr(session.end)}</Text>
-        </View>
-        <View style={styles.rowMeta}>
-          <Text style={styles.rowDate}>{dateStr(session.end)}</Text>
-          <Text style={[styles.rowTag, { color: met ? colors.success : colors.muted }]}>
-            {met ? 'goal met' : 'short'}
-          </Text>
-        </View>
-      </View>
-    </Swipeable>
-  );
-}
-
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
-  flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12 },
   back: { fontSize: 16, fontWeight: '600', color: colors.accent },
   headerTitle: { fontSize: 17, fontWeight: '700', color: colors.ink },
@@ -163,26 +103,5 @@ const styles = StyleSheet.create({
   bar: { width: 22, borderRadius: 6 },
   barDay: { fontSize: 11, fontWeight: '600', color: colors.faint, marginTop: 6 },
 
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.ink, marginTop: 26, marginBottom: 12 },
   empty: { textAlign: 'center', color: colors.ghost, fontSize: 13, paddingVertical: 20 },
-  hint: { fontSize: 11.5, color: colors.ghost, marginBottom: 10 },
-  row: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 16, padding: 14, marginBottom: 8, gap: 14 },
-  deleteAction: { marginBottom: 8 },
-  deleteGradient: {
-    flex: 1,
-    width: 104,
-    borderRadius: 16,
-    marginRight: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  deleteIcon: { fontSize: 20 },
-  deleteText: { color: colors.surface, fontWeight: '700', fontSize: 13, marginTop: 2 },
-  rowDotWrap: { width: 38, height: 38, borderRadius: 12, backgroundColor: colors.surfaceRow, alignItems: 'center', justifyContent: 'center' },
-  rowDot: { width: 11, height: 11, borderRadius: 6 },
-  rowDuration: { fontSize: 15, fontWeight: '700', color: colors.ink },
-  rowRange: { fontSize: 12, color: colors.faint, marginTop: 2 },
-  rowMeta: { alignItems: 'flex-end' },
-  rowDate: { fontSize: 12.5, fontWeight: '600', color: colors.muted },
-  rowTag: { fontSize: 11, fontWeight: '600', marginTop: 2 },
 });

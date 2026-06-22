@@ -7,6 +7,7 @@ import { RootStackParamList } from '../types';
 import { fmt, timeStr, getInitials } from '../utils';
 import { HaloLogo } from '../components/HaloLogo';
 import { ProgressRing } from '../components/ProgressRing';
+import { HistoryRow } from '../components/HistoryRow';
 import { colors } from '../theme';
 
 const GOAL_HOURS = [13, 16, 18, 20];
@@ -14,7 +15,7 @@ const GOAL_HOURS = [13, 16, 18, 20];
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export function HomeScreen({ navigation }: Props) {
-  const { name, goalHours, fast, history, setGoal, startFast, endFast } = useHalo();
+  const { name, goalHours, fast, history, setGoal, startFast, endFast, deleteSession } = useHalo();
   const [now, setNow] = useState(Date.now());
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -30,6 +31,8 @@ export function HomeScreen({ navigation }: Props) {
   const reached = elapsed >= goalMs;
 
   const count = history.length;
+  const avg = count ? history.reduce((a, s) => a + s.duration, 0) / count / 3.6e6 : 0;
+  const goalMet = history.filter((s) => s.duration >= goalMs).length;
 
   const goTo = (screen: 'Stats' | 'Settings') => {
     setMenuOpen(false);
@@ -114,6 +117,19 @@ export function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
+        {/* history */}
+        <View style={styles.historyHeader}>
+          <Text style={styles.sectionTitle}>History</Text>
+          {count > 0 && <Text style={styles.hint}>swipe to delete</Text>}
+        </View>
+        {count === 0 ? (
+          <Text style={styles.empty}>No fasts logged yet.{'\n'}Tap Start to begin your first one.</Text>
+        ) : (
+          history.map((s) => (
+            <HistoryRow key={s.start} session={s} goalMs={goalMs} onDelete={() => deleteSession(s.start)} />
+          ))
+        )}
+
       </ScrollView>
 
       {/* account menu */}
@@ -127,6 +143,21 @@ export function HomeScreen({ navigation }: Props) {
               <View style={styles.flex}>
                 <Text style={styles.menuName} numberOfLines={1}>{name}</Text>
                 <Text style={styles.menuSub}>{count} fasts logged</Text>
+              </View>
+            </View>
+
+            <View style={styles.menuStats}>
+              <View style={styles.menuStat}>
+                <Text style={styles.menuStatValue}>{count}</Text>
+                <Text style={styles.menuStatLabel}>fasts</Text>
+              </View>
+              <View style={styles.menuStat}>
+                <Text style={styles.menuStatValue}>{count ? avg.toFixed(1) : '0'}</Text>
+                <Text style={styles.menuStatLabel}>avg hours</Text>
+              </View>
+              <View style={styles.menuStat}>
+                <Text style={styles.menuStatValue}>{goalMet}</Text>
+                <Text style={styles.menuStatLabel}>goal met</Text>
               </View>
             </View>
 
@@ -187,6 +218,11 @@ const styles = StyleSheet.create({
   endBtn: { paddingHorizontal: 44, paddingVertical: 15, borderRadius: 999, backgroundColor: colors.accent },
   endBtnText: { color: colors.surface, fontWeight: '700', fontSize: 16 },
 
+  historyHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 28, marginBottom: 12 },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.ink },
+  hint: { fontSize: 11.5, color: colors.ghost },
+  empty: { textAlign: 'center', color: colors.ghost, fontSize: 13, lineHeight: 20, paddingVertical: 24 },
+
   backdrop: { flex: 1, backgroundColor: 'rgba(74,63,114,0.25)', justifyContent: 'flex-start', alignItems: 'flex-end' },
   menu: { marginTop: 90, marginRight: 20, width: 240, backgroundColor: colors.surface, borderRadius: 18, padding: 10, shadowColor: '#7864c8', shadowOpacity: 0.3, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 8 },
   menuHeader: { flexDirection: 'row', alignItems: 'center', gap: 11, padding: 8, marginBottom: 4 },
@@ -194,6 +230,10 @@ const styles = StyleSheet.create({
   menuAvatarText: { color: colors.surface, fontWeight: '700', fontSize: 15 },
   menuName: { fontSize: 14, fontWeight: '700', color: colors.ink },
   menuSub: { fontSize: 12, color: colors.faint, marginTop: 1 },
+  menuStats: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.surfaceRow, borderRadius: 12, paddingVertical: 10, marginHorizontal: 4, marginBottom: 6 },
+  menuStat: { alignItems: 'center' },
+  menuStatValue: { fontSize: 16, fontWeight: '700', color: colors.text },
+  menuStatLabel: { fontSize: 10, fontWeight: '600', color: colors.ghost, marginTop: 1 },
   menuItem: { paddingVertical: 12, paddingHorizontal: 10, borderRadius: 12 },
   menuItemText: { fontSize: 15, fontWeight: '600', color: colors.text },
 });

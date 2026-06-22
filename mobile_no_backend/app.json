@@ -24,6 +24,14 @@
       "eas": {
         "projectId": "1a994f46-4a04-4180-ac13-59a1511015aa"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#f4f0fb"
+        }
+      ]
+    ]
   }
 }

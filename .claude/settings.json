@@ -80,7 +80,11 @@
       "Bash(magick -size 1024x1024 'gradient:#e7c6ff-#bbd0ff' -alpha set '\\(' -size 1024x1024 xc:none -fill white -draw 'circle 512,512 512,242' '\\)' -compose DstIn -composite disc_fg.png)",
       "Bash(magick -size 1024x1024 xc:none disc_fg.png -compose over -composite -fill white -draw 'circle 512,512 512,382' halo_fg.png)",
       "Bash(cp halo_fg.png halo_splash.png)",
-      "Bash(git commit -q -m 'Fix app icons: real gradient ring with white center \\(was a flat gradient\\) *)"
+      "Bash(git commit -q -m 'Fix app icons: real gradient ring with white center \\(was a flat gradient\\) *)",
+      "Bash(ls node_modules/expo-splash-screen)",
+      "Bash(node -e \"console.log\\('dep:', require\\('./package.json'\\).dependencies['expo-splash-screen'] || 'не в deps'\\)\")",
+      "Bash(npx --yes expo install expo-splash-screen)",
+      "Bash(node -e \"console.log\\('splash dep:', require\\('./package.json'\\).dependencies['expo-splash-screen']\\)\")"
     ],
     "additionalDirectories": [
       "/tmp/halo-export",
