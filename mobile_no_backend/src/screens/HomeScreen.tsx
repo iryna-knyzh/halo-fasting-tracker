@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet, Modal } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Modal, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useHalo } from '../store';
@@ -15,7 +15,7 @@ const GOAL_HOURS = [13, 16, 18, 20];
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export function HomeScreen({ navigation }: Props) {
-  const { name, goalHours, fast, history, setGoal, startFast, endFast, deleteSession } = useHalo();
+  const { name, goalHours, fast, history, setGoal, startFast, endFast, clearHistory } = useHalo();
   const [now, setNow] = useState(Date.now());
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -38,6 +38,12 @@ export function HomeScreen({ navigation }: Props) {
     setMenuOpen(false);
     navigation.navigate(screen);
   };
+
+  const confirmClear = () =>
+    Alert.alert('Clear history?', 'This removes all logged fasts. This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Clear', style: 'destructive', onPress: clearHistory },
+    ]);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -120,14 +126,16 @@ export function HomeScreen({ navigation }: Props) {
         {/* history */}
         <View style={styles.historyHeader}>
           <Text style={styles.sectionTitle}>History</Text>
-          {count > 0 && <Text style={styles.hint}>swipe to delete</Text>}
+          {count > 0 && (
+            <Pressable onPress={confirmClear} hitSlop={8}>
+              <Text style={styles.clear}>Clear</Text>
+            </Pressable>
+          )}
         </View>
         {count === 0 ? (
           <Text style={styles.empty}>No fasts logged yet.{'\n'}Tap Start to begin your first one.</Text>
         ) : (
-          history.map((s) => (
-            <HistoryRow key={s.start} session={s} goalMs={goalMs} onDelete={() => deleteSession(s.start)} />
-          ))
+          history.map((s) => <HistoryRow key={s.start} session={s} goalMs={goalMs} />)
         )}
 
       </ScrollView>
@@ -220,7 +228,7 @@ const styles = StyleSheet.create({
 
   historyHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 28, marginBottom: 12 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.ink },
-  hint: { fontSize: 11.5, color: colors.ghost },
+  clear: { fontSize: 13, fontWeight: '600', color: colors.ghost },
   empty: { textAlign: 'center', color: colors.ghost, fontSize: 13, lineHeight: 20, paddingVertical: 24 },
 
   backdrop: { flex: 1, backgroundColor: 'rgba(74,63,114,0.25)', justifyContent: 'flex-start', alignItems: 'flex-end' },
