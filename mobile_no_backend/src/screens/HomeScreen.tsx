@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, Modal, Alert, Platform, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useHalo } from '../store';
-import { RootStackParamList } from '../types';
 import { fmt, timeStr, getInitials } from '../utils';
 import { HaloLogo } from '../components/HaloLogo';
 import { ProgressRing } from '../components/ProgressRing';
@@ -13,9 +11,7 @@ import { colors } from '../theme';
 
 const GOAL_HOURS = [13, 16, 18, 20];
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
-
-export function HomeScreen({ navigation }: Props) {
+export function HomeScreen() {
   const { name, goalHours, fast, history, setGoal, startFast, endFast, clearHistory } = useHalo();
   const [now, setNow] = useState(Date.now());
   const [menuOpen, setMenuOpen] = useState(false);
@@ -47,11 +43,6 @@ export function HomeScreen({ navigation }: Props) {
   const count = history.length;
   const avg = count ? history.reduce((a, s) => a + s.duration, 0) / count / 3.6e6 : 0;
   const goalMet = history.filter((s) => s.duration >= goalMs).length;
-
-  const goTo = (screen: 'Stats' | 'Settings') => {
-    setMenuOpen(false);
-    navigation.navigate(screen);
-  };
 
   const confirmClear = () => {
     // Alert.alert is a no-op on react-native-web, so use the browser confirm there.
@@ -197,13 +188,6 @@ export function HomeScreen({ navigation }: Props) {
                 <Text style={styles.menuStatLabel}>goal met</Text>
               </View>
             </View>
-
-            <Pressable style={styles.menuItem} onPress={() => goTo('Stats')}>
-              <Text style={styles.menuItemText}>📊  Statistics</Text>
-            </Pressable>
-            <Pressable style={styles.menuItem} onPress={() => goTo('Settings')}>
-              <Text style={styles.menuItemText}>⚙️  Settings</Text>
-            </Pressable>
           </Pressable>
         </Pressable>
       </Modal>
@@ -272,6 +256,4 @@ const styles = StyleSheet.create({
   menuStat: { alignItems: 'center' },
   menuStatValue: { fontSize: 16, fontWeight: '700', color: colors.text },
   menuStatLabel: { fontSize: 10, fontWeight: '600', color: colors.ghost, marginTop: 1 },
-  menuItem: { paddingVertical: 12, paddingHorizontal: 10, borderRadius: 12 },
-  menuItemText: { fontSize: 15, fontWeight: '600', color: colors.text },
 });
