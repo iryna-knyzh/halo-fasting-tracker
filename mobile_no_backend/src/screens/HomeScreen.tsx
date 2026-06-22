@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet, Modal, Alert, Platform } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { View, Text, Pressable, ScrollView, StyleSheet, Modal, Alert, Platform, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useHalo } from '../store';
@@ -18,11 +18,24 @@ export function HomeScreen({ navigation }: Props) {
   const { name, goalHours, fast, history, setGoal, startFast, endFast, clearHistory } = useHalo();
   const [now, setNow] = useState(Date.now());
   const [menuOpen, setMenuOpen] = useState(false);
+  const greetingOpacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Greeting fades out slowly after 3 seconds
+  useEffect(() => {
+    const anim = Animated.timing(greetingOpacity, {
+      toValue: 0,
+      duration: 1200,
+      delay: 3000,
+      useNativeDriver: true,
+    });
+    anim.start();
+    return () => anim.stop();
+  }, [greetingOpacity]);
 
   const goalMs = goalHours * 3.6e6;
   const idle = !fast;
@@ -74,7 +87,7 @@ export function HomeScreen({ navigation }: Props) {
         </View>
 
         {/* greeting */}
-        <Text style={styles.greeting}>Hi, {name} 👋</Text>
+        <Animated.Text style={[styles.greeting, { opacity: greetingOpacity }]}>Hi, {name} 👋</Animated.Text>
 
         {/* status */}
         <View style={styles.statusRow}>
