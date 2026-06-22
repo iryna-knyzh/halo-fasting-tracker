@@ -1,9 +1,7 @@
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { colors } from '../theme';
-
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 interface Props {
   size?: number;
@@ -13,7 +11,9 @@ interface Props {
 }
 
 // Progress ring like the web app: a track + a gradient arc that smoothly
-// fills toward the goal as time passes.
+// fills toward the goal. We animate an Animated.Value and feed the numeric
+// strokeDashoffset to a plain Circle — this works on both native and web
+// (animating SVG props directly via AnimatedCircle breaks on react-native-web).
 export function ProgressRing({ size = 230, strokeWidth = 18, progress, children }: Props) {
   const center = size / 2;
   const r = (size - strokeWidth) / 2;
@@ -22,17 +22,21 @@ export function ProgressRing({ size = 230, strokeWidth = 18, progress, children 
 
   const clamped = Math.max(0, Math.min(1, progress));
   const anim = useRef(new Animated.Value(clamped)).current;
+  const [offset, setOffset] = useState(() => c * (1 - clamped));
+
+  useEffect(() => {
+    const id = anim.addListener(({ value }) => setOffset(c * (1 - value)));
+    return () => anim.removeListener(id);
+  }, [anim, c]);
 
   useEffect(() => {
     Animated.timing(anim, {
       toValue: clamped,
       duration: 1000,
       easing: Easing.linear,
-      useNativeDriver: false, // strokeDashoffset is not natively drivable
+      useNativeDriver: false,
     }).start();
   }, [clamped, anim]);
-
-  const dashoffset = anim.interpolate({ inputRange: [0, 1], outputRange: [c, 0] });
 
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
@@ -45,7 +49,7 @@ export function ProgressRing({ size = 230, strokeWidth = 18, progress, children 
           </LinearGradient>
         </Defs>
         <Circle cx={center} cy={center} r={r} stroke="#efeaf7" strokeWidth={strokeWidth} fill="none" />
-        <AnimatedCircle
+        <Circle
           cx={center}
           cy={center}
           r={r}
@@ -54,7 +58,7 @@ export function ProgressRing({ size = 230, strokeWidth = 18, progress, children 
           strokeLinecap="round"
           fill="none"
           strokeDasharray={c}
-          strokeDashoffset={dashoffset}
+          strokeDashoffset={offset}
           transform={`rotate(-90 ${center} ${center})`}
         />
       </Svg>

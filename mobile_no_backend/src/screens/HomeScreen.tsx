@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet, Modal, Alert } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Modal, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useHalo } from '../store';
@@ -39,11 +39,19 @@ export function HomeScreen({ navigation }: Props) {
     navigation.navigate(screen);
   };
 
-  const confirmClear = () =>
+  const confirmClear = () => {
+    // Alert.alert is a no-op on react-native-web, so use the browser confirm there.
+    if (Platform.OS === 'web') {
+      if (typeof window === 'undefined' || window.confirm('Clear all logged fasts? This cannot be undone.')) {
+        clearHistory();
+      }
+      return;
+    }
     Alert.alert('Clear history?', 'This removes all logged fasts. This cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Clear', style: 'destructive', onPress: clearHistory },
     ]);
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
