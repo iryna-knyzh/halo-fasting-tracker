@@ -39,7 +39,12 @@
       "Bash(npx expo *)",
       "Bash(npx --yes create-expo-app@latest . --template blank-typescript)",
       "Bash(npx --yes expo install expo-secure-store)",
-      "Bash(rm -rf /tmp/halo-export; echo \"cleaned\"; echo \"=== структура mobile/src ===\"; find src App.tsx -type f | sort)"
+      "Bash(rm -rf /tmp/halo-export; echo \"cleaned\"; echo \"=== структура mobile/src ===\"; find src App.tsx -type f | sort)",
+      "Bash(git commit -q -m 'Add React Native + Expo mobile app \\(Halo\\) *)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('app.json'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('eas.json'\\)\\); console.log\\('app.json + eas.json: валідний JSON ✅'\\)\")",
+      "Bash(npx --yes eas-cli@latest --version)",
+      "Bash(rm -f assets/android-icon-background.png assets/android-icon-monochrome.png)",
+      "Bash(npx --yes expo install expo-linear-gradient)"
     ],
     "additionalDirectories": [
       "/tmp/halo-export"

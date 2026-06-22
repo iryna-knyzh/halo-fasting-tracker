@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -5,10 +6,14 @@ import {
   ScrollView,
   StyleSheet,
   SafeAreaView,
+  Modal,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { User, FastSession, ActiveFast } from '../types';
 import { fmt, dur, timeStr, dateStr, getInitials } from '../utils';
 import { colors } from '../theme';
+import { HaloLogo } from '../components/HaloLogo';
 
 const GOAL_HOURS = [13, 16, 18, 20];
 
@@ -37,6 +42,9 @@ export function AppScreen({
 
   const count = history.length;
   const avg = count ? history.reduce((a, s) => a + s.duration, 0) / count / 3.6e6 : 0;
+  const goalMet = history.filter((s) => s.duration >= goalMs).length;
+
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -44,13 +52,13 @@ export function AppScreen({
         {/* header */}
         <View style={styles.header}>
           <View style={styles.brand}>
-            <View style={styles.logo} />
+            <HaloLogo size={30} />
             <View>
               <Text style={styles.appName}>Halo</Text>
               <Text style={styles.tagline}>FASTING TRACKER</Text>
             </View>
           </View>
-          <Pressable style={styles.avatarBtn} onPress={onLogout}>
+          <Pressable style={styles.avatarBtn} onPress={() => setMenuOpen(true)}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{getInitials(user.name, user.email)}</Text>
             </View>
@@ -66,23 +74,27 @@ export function AppScreen({
           </View>
         </View>
 
-        {/* timer / start */}
+        {/* timer / start — circle stays in place in both states */}
         <View style={styles.ring}>
-          {idle ? (
-            <Pressable style={styles.startBtn} onPress={onStart}>
-              <Text style={styles.startLabel}>Start</Text>
-              <Text style={styles.startHint}>tap to begin</Text>
-            </Pressable>
-          ) : (
-            <View style={styles.timerWrap}>
-              <Text style={styles.elapsedLabel}>ELAPSED</Text>
-              <Text style={styles.elapsedTime}>{fmt(elapsed)}</Text>
-              <Text style={[styles.goalStatus, reached && styles.goalStatusReached]}>
-                {reached ? 'Goal reached · keep going' : `${Math.round(progress * 100)}% of ${goalHours}h goal`}
-              </Text>
-              <View style={styles.progressTrack}>
-                <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-              </View>
+          <Pressable style={styles.ringCircle} onPress={idle ? onStart : undefined} disabled={!idle}>
+            {idle ? (
+              <>
+                <Text style={styles.startLabel}>Start</Text>
+                <Text style={styles.startHint}>tap to begin</Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.elapsedLabel}>ELAPSED</Text>
+                <Text style={styles.elapsedTime}>{fmt(elapsed)}</Text>
+                <Text style={[styles.goalStatus, reached && styles.goalStatusReached]}>
+                  {reached ? 'Goal reached' : `${Math.round(progress * 100)}% of ${goalHours}h`}
+                </Text>
+              </>
+            )}
+          </Pressable>
+          {!idle && (
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
             </View>
           )}
         </View>
@@ -156,6 +168,41 @@ export function AppScreen({
           })
         )}
       </ScrollView>
+
+      {/* account menu */}
+      <Modal
+        visible={menuOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMenuOpen(false)}
+      >
+        <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
+          <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
+            <View style={styles.menuHeader}>
+              <View style={styles.menuAvatar}>
+                <Text style={styles.menuAvatarText}>{getInitials(user.name, user.email)}</Text>
+              </View>
+              <View style={styles.flex}>
+                <Text style={styles.menuName} numberOfLines={1}>{user.name}</Text>
+                <Text style={styles.menuEmail} numberOfLines={1}>{user.email}</Text>
+              </View>
+            </View>
+
+            <View style={styles.menuStats}>
+              <Stat value={String(count)} label="fasts" />
+              <Stat value={count ? avg.toFixed(1) : '0'} label="avg hours" />
+              <Stat value={String(goalMet)} label="goal met" />
+            </View>
+
+            <Pressable
+              style={styles.signOut}
+              onPress={() => { setMenuOpen(false); onLogout(); }}
+            >
+              <Text style={styles.signOutText}>Sign out</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -171,17 +218,43 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
-  content: { padding: 20, paddingBottom: 40 },
+  content: {
+    padding: 20,
+    paddingBottom: 40,
+    paddingTop: (Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 : 0) + 20,
+  },
   flex: { flex: 1 },
 
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 11 },
-  logo: { width: 30, height: 30, borderRadius: 15, backgroundColor: colors.lavender },
   appName: { fontSize: 18, fontWeight: '700', color: colors.ink },
   tagline: { fontSize: 10, fontWeight: '500', color: colors.faint, letterSpacing: 0.4, marginTop: 2 },
   avatarBtn: {},
   avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.lavender, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: colors.surface, fontWeight: '700', fontSize: 13 },
+
+  backdrop: { flex: 1, backgroundColor: 'rgba(74,63,114,0.25)', justifyContent: 'flex-start', alignItems: 'flex-end' },
+  menu: {
+    marginTop: 90,
+    marginRight: 20,
+    width: 250,
+    backgroundColor: colors.surface,
+    borderRadius: 18,
+    padding: 10,
+    shadowColor: '#7864c8',
+    shadowOpacity: 0.3,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 8,
+  },
+  menuHeader: { flexDirection: 'row', alignItems: 'center', gap: 11, padding: 8 },
+  menuAvatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.lavender, alignItems: 'center', justifyContent: 'center' },
+  menuAvatarText: { color: colors.surface, fontWeight: '700', fontSize: 15 },
+  menuName: { fontSize: 14, fontWeight: '700', color: colors.ink },
+  menuEmail: { fontSize: 12, color: colors.faint, marginTop: 1 },
+  menuStats: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.surfaceRow, borderRadius: 12, paddingVertical: 10, marginVertical: 8 },
+  signOut: { paddingVertical: 12, alignItems: 'center', borderRadius: 12 },
+  signOutText: { color: '#b07a9e', fontWeight: '700', fontSize: 14 },
 
   statusRow: { alignItems: 'center', marginBottom: 14 },
   pill: { paddingHorizontal: 16, paddingVertical: 7, borderRadius: 999 },
@@ -192,17 +265,16 @@ const styles = StyleSheet.create({
   pillTextFasting: { color: '#a55a9c' },
 
   ring: { alignItems: 'center', marginVertical: 10 },
-  startBtn: {
-    width: 200, height: 200, borderRadius: 100, backgroundColor: colors.surface,
-    alignItems: 'center', justifyContent: 'center',
+  ringCircle: {
+    width: 220, height: 220, borderRadius: 110, backgroundColor: colors.surface,
+    alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16,
     shadowColor: '#9682dc', shadowOpacity: 0.25, shadowRadius: 20, shadowOffset: { width: 0, height: 10 }, elevation: 5,
   },
   startLabel: { fontSize: 34, fontWeight: '600', color: colors.inkSoft },
   startHint: { fontSize: 13, color: colors.faint, marginTop: 4 },
-  timerWrap: { alignItems: 'center', width: '100%' },
   elapsedLabel: { fontSize: 11, fontWeight: '600', color: colors.ghost, letterSpacing: 1.5, marginBottom: 4 },
-  elapsedTime: { fontSize: 48, fontWeight: '600', color: colors.ink, fontVariant: ['tabular-nums'] },
-  goalStatus: { fontSize: 13, fontWeight: '600', color: colors.faint, marginTop: 6 },
+  elapsedTime: { fontSize: 36, fontWeight: '600', color: colors.ink, fontVariant: ['tabular-nums'] },
+  goalStatus: { fontSize: 12.5, fontWeight: '600', color: colors.faint, marginTop: 6, textAlign: 'center' },
   goalStatusReached: { color: colors.success },
   progressTrack: { width: '80%', height: 8, borderRadius: 4, backgroundColor: colors.surfaceSoft, marginTop: 16, overflow: 'hidden' },
   progressFill: { height: '100%', borderRadius: 4, backgroundColor: colors.accent },

@@ -12,6 +12,7 @@ import {
 import { api, ApiError, AuthResponse } from '../api';
 import { AuthMode } from '../types';
 import { colors } from '../theme';
+import { HaloLogo } from '../components/HaloLogo';
 
 interface Props {
   onAuthed: (res: AuthResponse) => void;
@@ -63,7 +64,9 @@ export function AuthScreen({ onAuthed }: Props) {
           <View style={styles.card}>
             {/* brand */}
             <View style={styles.brand}>
-              <View style={styles.logo} />
+              <View style={styles.logoWrap}>
+                <HaloLogo size={60} />
+              </View>
               <Text style={styles.title}>{isRegister ? 'Create account' : 'Welcome back'}</Text>
               <Text style={styles.subtitle}>
                 {isRegister ? 'Start your fasting journey' : 'Sign in to continue'}
@@ -161,13 +164,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   brand: { alignItems: 'center', marginBottom: 22 },
-  logo: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.lavender,
-    marginBottom: 12,
-  },
+  logoWrap: { marginBottom: 12 },
   title: { fontSize: 23, fontWeight: '700', color: colors.ink },
   subtitle: { fontSize: 13, color: colors.faint, marginTop: 3 },
   tabs: {
