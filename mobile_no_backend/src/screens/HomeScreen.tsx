@@ -8,6 +8,7 @@ import { fmt, timeStr, getInitials } from '../utils';
 import { HaloLogo } from '../components/HaloLogo';
 import { ProgressRing } from '../components/ProgressRing';
 import { HistoryRow } from '../components/HistoryRow';
+import { RecentChart } from '../components/RecentChart';
 import { colors } from '../theme';
 
 const GOAL_HOURS = [13, 16, 18, 20];
@@ -144,6 +145,13 @@ export function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
+        {/* recent fasts chart (like the web) */}
+        {count > 0 && (
+          <View style={styles.chartWrap}>
+            <RecentChart history={history} goalHours={goalHours} />
+          </View>
+        )}
+
         {/* history */}
         <View style={styles.historyHeader}>
           <Text style={styles.sectionTitle}>History</Text>
@@ -247,6 +255,7 @@ const styles = StyleSheet.create({
   endBtn: { paddingHorizontal: 44, paddingVertical: 15, borderRadius: 999, backgroundColor: colors.accent },
   endBtnText: { color: colors.surface, fontWeight: '700', fontSize: 16 },
 
+  chartWrap: { marginTop: 28 },
   historyHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 28, marginBottom: 12 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.ink },
   clear: { fontSize: 13, fontWeight: '600', color: colors.ghost },
