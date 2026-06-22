@@ -72,7 +72,9 @@
       "Bash(identify -format \"disc alpha=%A\\\\n\" /tmp/disc512.png)",
       "Bash(magick /tmp/disc512.png -format \"corner=%[pixel:p{2,2}]\\\\n\" info:)",
       "Bash(magick -size 512x512 xc:white /tmp/disc512.png -compose over -composite -fill white -draw 'circle 256,256 256,181' -alpha off icon-512.png)",
-      "Bash(magick icon-512.png -format \"corner=%[pixel:p{2,2}] center=%[pixel:p{256,256}]\\\\n\" info:)"
+      "Bash(magick icon-512.png -format \"corner=%[pixel:p{2,2}] center=%[pixel:p{256,256}]\\\\n\" info:)",
+      "Bash(npx --yes expo install react-native-svg)",
+      "Bash(node -e \"console.log\\('svg:', require\\('./package.json'\\).dependencies['react-native-svg']\\)\")"
     ],
     "additionalDirectories": [
       "/tmp/halo-export",

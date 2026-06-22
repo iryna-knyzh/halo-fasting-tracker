@@ -4,8 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useHalo } from '../store';
 import { RootStackParamList } from '../types';
-import { fmt, getInitials } from '../utils';
+import { fmt, timeStr, getInitials } from '../utils';
 import { HaloLogo } from '../components/HaloLogo';
+import { ProgressRing } from '../components/ProgressRing';
 import { colors } from '../theme';
 
 const GOAL_HOURS = [13, 16, 18, 20];
@@ -67,54 +68,51 @@ export function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* ring */}
+        {/* ring with progress (fills as time goes, like the web app) */}
         <View style={styles.ring}>
-          <Pressable style={styles.ringCircle} onPress={idle ? startFast : undefined} disabled={!idle}>
+          <ProgressRing size={230} progress={idle ? 0 : progress}>
             {idle ? (
-              <>
+              <Pressable style={styles.center} onPress={startFast}>
                 <Text style={styles.startLabel}>Start</Text>
                 <Text style={styles.startHint}>tap to begin</Text>
-              </>
+              </Pressable>
             ) : (
-              <>
+              <View style={styles.center}>
                 <Text style={styles.elapsedLabel}>ELAPSED</Text>
                 <Text style={styles.elapsedTime}>{fmt(elapsed)}</Text>
                 <Text style={[styles.goalStatus, reached && styles.goalStatusReached]}>
                   {reached ? 'Goal reached' : `${Math.round(progress * 100)}% of ${goalHours}h`}
                 </Text>
-              </>
+              </View>
             )}
-          </Pressable>
-          {!idle && (
-            <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-            </View>
-          )}
+          </ProgressRing>
         </View>
 
-        {/* controls */}
-        {idle ? (
-          <View style={styles.controls}>
-            <Text style={styles.controlHint}>Choose your fasting goal</Text>
-            <View style={styles.chips}>
-              {GOAL_HOURS.map((h) => (
-                <Pressable
-                  key={h}
-                  style={[styles.chip, h === goalHours && styles.chipActive]}
-                  onPress={() => setGoal(h)}
-                >
-                  <Text style={[styles.chipText, h === goalHours && styles.chipTextActive]}>{h}h</Text>
-                </Pressable>
-              ))}
-            </View>
+        {/* controls — hint line stays at the same height in both states */}
+        <View style={styles.controls}>
+          <Text style={styles.controlHint}>
+            {idle ? 'Choose your fasting goal' : `Started at ${timeStr(fast!.start)}`}
+          </Text>
+          <View style={styles.controlAction}>
+            {idle ? (
+              <View style={styles.chips}>
+                {GOAL_HOURS.map((h) => (
+                  <Pressable
+                    key={h}
+                    style={[styles.chip, h === goalHours && styles.chipActive]}
+                    onPress={() => setGoal(h)}
+                  >
+                    <Text style={[styles.chipText, h === goalHours && styles.chipTextActive]}>{h}h</Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : (
+              <Pressable style={styles.endBtn} onPress={endFast}>
+                <Text style={styles.endBtnText}>End fast</Text>
+              </Pressable>
+            )}
           </View>
-        ) : (
-          <View style={styles.controls}>
-            <Pressable style={styles.endBtn} onPress={endFast}>
-              <Text style={styles.endBtnText}>End fast</Text>
-            </Pressable>
-          </View>
-        )}
+        </View>
 
       </ScrollView>
 
@@ -170,22 +168,17 @@ const styles = StyleSheet.create({
   pillTextFasting: { color: '#a55a9c' },
 
   ring: { alignItems: 'center', marginVertical: 10 },
-  ringCircle: {
-    width: 220, height: 220, borderRadius: 110, backgroundColor: colors.surface,
-    alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16,
-    shadowColor: '#9682dc', shadowOpacity: 0.25, shadowRadius: 20, shadowOffset: { width: 0, height: 10 }, elevation: 5,
-  },
+  center: { width: 184, height: 184, borderRadius: 92, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
   startLabel: { fontSize: 34, fontWeight: '600', color: colors.inkSoft },
   startHint: { fontSize: 13, color: colors.faint, marginTop: 4 },
   elapsedLabel: { fontSize: 11, fontWeight: '600', color: colors.ghost, letterSpacing: 1.5, marginBottom: 4 },
   elapsedTime: { fontSize: 36, fontWeight: '600', color: colors.ink, fontVariant: ['tabular-nums'] },
   goalStatus: { fontSize: 12.5, fontWeight: '600', color: colors.faint, marginTop: 6, textAlign: 'center' },
   goalStatusReached: { color: colors.success },
-  progressTrack: { width: '80%', height: 8, borderRadius: 4, backgroundColor: colors.surfaceSoft, marginTop: 16, overflow: 'hidden' },
-  progressFill: { height: '100%', borderRadius: 4, backgroundColor: colors.accent },
 
   controls: { alignItems: 'center', marginTop: 18 },
-  controlHint: { fontSize: 13, color: colors.faint, marginBottom: 12 },
+  controlHint: { fontSize: 13, color: colors.faint, marginBottom: 12, height: 18 },
+  controlAction: { minHeight: 44, justifyContent: 'center' },
   chips: { flexDirection: 'row', gap: 8 },
   chip: { paddingHorizontal: 17, paddingVertical: 9, borderRadius: 999, backgroundColor: colors.surface },
   chipActive: { backgroundColor: colors.accent },
