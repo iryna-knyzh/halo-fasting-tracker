@@ -1,7 +1,9 @@
-import { ReactNode } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { ReactNode, useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated, Easing } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { colors } from '../theme';
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 interface Props {
   size?: number;
@@ -10,13 +12,27 @@ interface Props {
   children?: ReactNode;
 }
 
-// Progress ring like the web app: a track + a gradient arc that fills with progress.
+// Progress ring like the web app: a track + a gradient arc that smoothly
+// fills toward the goal as time passes.
 export function ProgressRing({ size = 230, strokeWidth = 18, progress, children }: Props) {
   const center = size / 2;
   const r = (size - strokeWidth) / 2;
   const c = 2 * Math.PI * r;
-  const offset = c * (1 - Math.max(0, Math.min(1, progress)));
   const innerSize = size - strokeWidth * 2 - 10;
+
+  const clamped = Math.max(0, Math.min(1, progress));
+  const anim = useRef(new Animated.Value(clamped)).current;
+
+  useEffect(() => {
+    Animated.timing(anim, {
+      toValue: clamped,
+      duration: 1000,
+      easing: Easing.linear,
+      useNativeDriver: false, // strokeDashoffset is not natively drivable
+    }).start();
+  }, [clamped, anim]);
+
+  const dashoffset = anim.interpolate({ inputRange: [0, 1], outputRange: [c, 0] });
 
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
@@ -29,7 +45,7 @@ export function ProgressRing({ size = 230, strokeWidth = 18, progress, children 
           </LinearGradient>
         </Defs>
         <Circle cx={center} cy={center} r={r} stroke="#efeaf7" strokeWidth={strokeWidth} fill="none" />
-        <Circle
+        <AnimatedCircle
           cx={center}
           cy={center}
           r={r}
@@ -38,7 +54,7 @@ export function ProgressRing({ size = 230, strokeWidth = 18, progress, children 
           strokeLinecap="round"
           fill="none"
           strokeDasharray={c}
-          strokeDashoffset={offset}
+          strokeDashoffset={dashoffset}
           transform={`rotate(-90 ${center} ${center})`}
         />
       </Svg>
