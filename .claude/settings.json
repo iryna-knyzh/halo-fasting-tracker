@@ -87,7 +87,9 @@
       "Bash(node -e \"console.log\\('splash dep:', require\\('./package.json'\\).dependencies['expo-splash-screen']\\)\")",
       "Bash(node -e \"const d=require\\('./package.json'\\).dependencies; ['react-dom','react-native-web','@expo/metro-runtime'].forEach\\(k=>console.log\\(k, d[k]||'НЕ встановлено'\\)\\)\")",
       "Bash(npx --yes expo install react-dom react-native-web @expo/metro-runtime)",
-      "Bash(node -e \"const d=require\\('./package.json'\\).dependencies; ['react-dom','react-native-web','@expo/metro-runtime'].forEach\\(k=>console.log\\(k, d[k]\\)\\)\")"
+      "Bash(node -e \"const d=require\\('./package.json'\\).dependencies; ['react-dom','react-native-web','@expo/metro-runtime'].forEach\\(k=>console.log\\(k, d[k]\\)\\)\")",
+      "Bash(magick -size 1x1 xc:none assets/splash-blank.png)",
+      "Bash(identify -format \"%f %wx%h alpha=%A\\\\n\" assets/splash-blank.png)"
     ],
     "additionalDirectories": [
       "/tmp/halo-export",
